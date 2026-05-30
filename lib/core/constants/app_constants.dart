@@ -7,7 +7,6 @@ class AppConstants {
       'https://www.linkedin.com/in/uday-kumar-reddy-sanikireddy-097108245';
   static const String playStoreDeveloperUrl =
       'https://play.google.com/store/apps/developer?id=Uday+Kumar+Reddy';
-  static const String youtubeUrl = 'https://www.youtube.com/';
   static const String email = 'udaykumar.sanikireddy@gmail.com';
   static const String phone = '(+91) 7799886755';
   static const String phoneDial = '+917799886755';

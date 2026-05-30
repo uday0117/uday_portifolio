@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/portfolio_controller.dart';
+import '../core/constants/app_constants.dart';
 import '../core/utils/animated_section.dart';
+import '../core/utils/launch_utils.dart';
 import '../core/utils/responsive_helper.dart';
+import '../data/portfolio_data.dart';
 import '../sections/about_section.dart';
 import '../sections/contact_section.dart';
 import '../sections/experience_section.dart';
@@ -25,6 +28,212 @@ class PortfolioPage extends StatelessWidget {
   final VoidCallback onToggleTheme;
   final bool isDarkMode;
 
+  List<String> _assistantCorpus() {
+    final content = <String>[
+      PortfolioData.summary,
+      PortfolioData.about,
+      PortfolioData.career,
+      PortfolioData.flutterExperience,
+      PortfolioData.iotExperience,
+      'Email: ${AppConstants.email}',
+      'Phone: ${AppConstants.phone}',
+      'LinkedIn: ${AppConstants.linkedInUrl}',
+      'Location: ${PortfolioData.location['City']}, ${PortfolioData.location['Country']}',
+      'Experience: ${PortfolioData.totalExperience}',
+      'Languages: ${PortfolioData.languages.join(', ')}',
+      'Hobbies: ${PortfolioData.hobbies.join(', ')}',
+    ];
+
+    for (final entry in PortfolioData.skillGroups.entries) {
+      content.add('${entry.key}: ${entry.value.join(', ')}');
+    }
+
+    for (final project in PortfolioData.projects) {
+      content.add(project.title);
+      content.add(project.description);
+      content.add('Technologies: ${project.technologies.join(', ')}');
+      content.add(project.liveDemoUrl);
+    }
+
+    for (final exp in PortfolioData.experience) {
+      content.add('${exp.company} - ${exp.role} (${exp.duration})');
+      content.addAll(exp.responsibilities);
+    }
+
+    return content;
+  }
+
+  void _openAssistantSheet(BuildContext context) {
+    final queryController = TextEditingController();
+    final corpus = _assistantCorpus();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        var results = <String>[];
+
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            void search() {
+              final query = queryController.text.trim().toLowerCase();
+              if (query.isEmpty) {
+                setSheetState(() => results = <String>[]);
+                return;
+              }
+
+              final matches = corpus
+                  .where((line) => line.toLowerCase().contains(query))
+                  .toSet()
+                  .take(8)
+                  .toList();
+
+              setSheetState(() => results = matches);
+            }
+
+            void searchFor(String query) {
+              queryController.text = query;
+              search();
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 18,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 540),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Portfolio Assistant',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Ask about skills, projects, experience, or contact details.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ActionChip(
+                          label: const Text('Top Flutter skills'),
+                          onPressed: () => searchFor('Flutter'),
+                        ),
+                        ActionChip(
+                          label: const Text('Show Play Store apps'),
+                          onPressed: () => searchFor('play.google.com'),
+                        ),
+                        ActionChip(
+                          label: const Text('Work experience'),
+                          onPressed: () => searchFor('experience'),
+                        ),
+                        ActionChip(
+                          label: const Text('Contact details'),
+                          onPressed: () => searchFor('Email'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: queryController,
+                            decoration: const InputDecoration(
+                              hintText:
+                                  'Try: Flutter, BuildCalc, contact, experience',
+                              prefixIcon: Icon(Icons.smart_toy_outlined),
+                            ),
+                            onSubmitted: (_) => search(),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        FilledButton(
+                          onPressed: search,
+                          child: const Text('Ask'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    if (results.isEmpty)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest
+                              .withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'No answers yet. Enter a keyword to search your portfolio data.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: results.length,
+                          separatorBuilder: (_, _) => const SizedBox(height: 8),
+                          itemBuilder: (context, index) => Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest
+                                  .withValues(alpha: 0.35),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(results[index]),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => LaunchUtils.sendMail(
+                            email: AppConstants.email,
+                            subject: 'Message from portfolio assistant',
+                          ),
+                          icon: const Icon(Icons.email_outlined),
+                          label: const Text('Email'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              LaunchUtils.openUrl(AppConstants.linkedInUrl),
+                          icon: const Icon(Icons.business_center_outlined),
+                          label: const Text('LinkedIn'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveHelper.isMobile(context);
@@ -37,6 +246,11 @@ class PortfolioPage extends StatelessWidget {
               isDarkMode: isDarkMode,
             )
           : null,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openAssistantSheet(context),
+        icon: const Icon(Icons.chat_bubble_outline_rounded),
+        label: const Text('Let\'s Talk'),
+      ),
       appBar: isMobile
           ? NavigationBarWidget(
               onSectionTap: portfolioController.scrollTo,

@@ -83,6 +83,30 @@ class _HeroSectionState extends State<HeroSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer.withValues(alpha: 0.56),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.24),
+                        ),
+                      ),
+                      child: Text(
+                        'Available for Flutter opportunities',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     Text(
                       'Uday Reddy',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -118,6 +142,24 @@ class _HeroSectionState extends State<HeroSection> {
                     Text(
                       PortfolioData.summary,
                       style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 14),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        Chip(
+                          label: Text(
+                            'Experience: ${PortfolioData.totalExperience}',
+                          ),
+                        ),
+                        Chip(
+                          label: Text(
+                            '${PortfolioData.location['City']}, ${PortfolioData.location['Country']}',
+                          ),
+                        ),
+                        Chip(label: Text(PortfolioData.languages.join(' | '))),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     Wrap(

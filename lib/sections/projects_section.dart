@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../data/portfolio_data.dart';
@@ -14,37 +12,22 @@ class ProjectsSection extends StatefulWidget {
 }
 
 class _ProjectsSectionState extends State<ProjectsSection> {
-  late final PageController _pageController;
-  Timer? _timer;
-  int _activeIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.9);
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!_pageController.hasClients || PortfolioData.projects.isEmpty) {
-        return;
-      }
-      final next = (_activeIndex + 1) % PortfolioData.projects.length;
-      _pageController.animateToPage(
-        next,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeOutCubic,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
+  String _selectedTag = 'All';
 
   @override
   Widget build(BuildContext context) {
     final projects = PortfolioData.projects;
+    final tags = <String>{'All'};
+    for (final project in projects) {
+      tags.addAll(project.technologies.take(3));
+    }
+
+    final filteredProjects = _selectedTag == 'All'
+        ? projects
+        : projects
+              .where((project) => project.technologies.contains(_selectedTag))
+              .toList();
+
     return SectionContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,52 +39,101 @@ class _ProjectsSectionState extends State<ProjectsSection> {
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Featured apps from Play Store',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 18),
-          SizedBox(
-            height: 430,
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: projects.length,
-              onPageChanged: (index) => setState(() => _activeIndex = index),
-              itemBuilder: (context, index) {
-                final isActive = index == _activeIndex;
-                return AnimatedScale(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                  scale: isActive ? 1 : 0.965,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: ProjectCard(project: projects[index]),
-                  ),
-                );
-              },
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.45),
+                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            child: Wrap(
+              spacing: 20,
+              runSpacing: 12,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.rocket_launch_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${projects.length}+ Published Apps',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Published apps from Play Store with real-world categories',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 14),
-          Center(
-            child: Wrap(
-              spacing: 8,
-              children: List.generate(projects.length, (index) {
-                final isActive = index == _activeIndex;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  width: isActive ? 26 : 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(
-                            context,
-                          ).colorScheme.outlineVariant.withValues(alpha: 0.65),
-                    borderRadius: BorderRadius.circular(999),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: tags
+                .map(
+                  (tag) => ChoiceChip(
+                    selected: _selectedTag == tag,
+                    label: Text(tag),
+                    onSelected: (_) => setState(() => _selectedTag = tag),
                   ),
-                );
-              }),
-            ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 18),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final cardWidth = width >= 1120
+                  ? (width - 40) / 3
+                  : width >= 760
+                  ? (width - 20) / 2
+                  : width;
+
+              return Wrap(
+                spacing: 20,
+                runSpacing: 20,
+                children: filteredProjects.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final project = entry.value;
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: Duration(milliseconds: 360 + (index * 70)),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, child) {
+                      return Transform.translate(
+                        offset: Offset(0, (1 - value) * 14),
+                        child: Opacity(opacity: value, child: child),
+                      );
+                    },
+                    child: SizedBox(
+                      width: cardWidth,
+                      child: ProjectCard(project: project),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
           ),
         ],
       ),
