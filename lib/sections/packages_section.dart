@@ -91,11 +91,6 @@ class PackagesSection extends StatelessWidget {
                         icon: const Icon(Icons.public),
                         label: const Text('Pub.dev'),
                       ),
-                      OutlinedButton.icon(
-                        onPressed: () => LaunchUtils.openUrl(package.githubUrl),
-                        icon: const Icon(Icons.code),
-                        label: const Text('GitHub'),
-                      ),
                     ],
                   ),
                 ],

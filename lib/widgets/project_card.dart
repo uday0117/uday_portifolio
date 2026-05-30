@@ -11,6 +11,7 @@ class ProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final isPlayStoreLink = project.liveDemoUrl.contains('play.google.com');
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -70,15 +71,16 @@ class ProjectCard extends StatelessWidget {
                   spacing: 12,
                   runSpacing: 12,
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () => LaunchUtils.openUrl(project.githubUrl),
-                      icon: const Icon(Icons.code),
-                      label: const Text('GitHub'),
-                    ),
                     FilledButton.icon(
                       onPressed: () => LaunchUtils.openUrl(project.liveDemoUrl),
-                      icon: const Icon(Icons.open_in_new),
-                      label: const Text('Live Demo'),
+                      icon: Icon(
+                        isPlayStoreLink
+                            ? Icons.shop_2_outlined
+                            : Icons.open_in_new,
+                      ),
+                      label: Text(
+                        isPlayStoreLink ? 'View on Play Store' : 'Live Demo',
+                      ),
                     ),
                   ],
                 ),

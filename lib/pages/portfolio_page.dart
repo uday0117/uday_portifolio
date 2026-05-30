@@ -53,95 +53,178 @@ class PortfolioPage extends StatelessWidget {
               isDarkMode: isDarkMode,
             ),
           Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primaryContainer.withValues(
-                      alpha: isDarkMode ? 0.12 : 0.18,
-                    ),
-                    Theme.of(context).colorScheme.surface.withValues(
-                      alpha: isDarkMode ? 0.95 : 1,
-                    ),
-                    Theme.of(context).colorScheme.tertiaryContainer.withValues(
-                      alpha: isDarkMode ? 0.10 : 0.14,
-                    ),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: SingleChildScrollView(
-                controller: portfolioController.scrollController,
-                child: Column(
-                  children: [
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.home]!,
-                      child: AnimatedSection(
-                        delay: const Duration(milliseconds: 50),
-                        child: HeroSection(
-                          onContactTap: () => portfolioController.scrollTo(
-                            PortfolioSection.contact,
+            child: Stack(
+              children: [
+                const Positioned.fill(child: _AtmosphereBackground()),
+                SingleChildScrollView(
+                  controller: portfolioController.scrollController,
+                  child: Column(
+                    children: [
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.home]!,
+                        child: AnimatedSection(
+                          delay: const Duration(milliseconds: 50),
+                          child: HeroSection(
+                            onContactTap: () => portfolioController.scrollTo(
+                              PortfolioSection.contact,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.about]!,
-                      child: const AnimatedSection(
-                        delay: Duration(milliseconds: 120),
-                        child: AboutSection(),
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.about]!,
+                        child: const AnimatedSection(
+                          delay: Duration(milliseconds: 120),
+                          child: AboutSection(),
+                        ),
                       ),
-                    ),
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.skills]!,
-                      child: const AnimatedSection(
-                        delay: Duration(milliseconds: 170),
-                        child: SkillsSection(),
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.skills]!,
+                        child: const AnimatedSection(
+                          delay: Duration(milliseconds: 170),
+                          child: SkillsSection(),
+                        ),
                       ),
-                    ),
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.projects]!,
-                      child: const AnimatedSection(
-                        delay: Duration(milliseconds: 220),
-                        child: ProjectsSection(),
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.projects]!,
+                        child: const AnimatedSection(
+                          delay: Duration(milliseconds: 220),
+                          child: ProjectsSection(),
+                        ),
                       ),
-                    ),
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.packages]!,
-                      child: const AnimatedSection(
-                        delay: Duration(milliseconds: 260),
-                        child: PackagesSection(),
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.packages]!,
+                        child: const AnimatedSection(
+                          delay: Duration(milliseconds: 260),
+                          child: PackagesSection(),
+                        ),
                       ),
-                    ),
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.experience]!,
-                      child: const AnimatedSection(
-                        delay: Duration(milliseconds: 300),
-                        child: ExperienceSection(),
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.experience]!,
+                        child: const AnimatedSection(
+                          delay: Duration(milliseconds: 300),
+                          child: ExperienceSection(),
+                        ),
                       ),
-                    ),
-                    _SectionAnchor(
-                      sectionKey: portfolioController
-                          .sectionKeys[PortfolioSection.contact]!,
-                      child: const AnimatedSection(
-                        delay: Duration(milliseconds: 340),
-                        child: ContactSection(),
+                      _SectionAnchor(
+                        sectionKey: portfolioController
+                            .sectionKeys[PortfolioSection.contact]!,
+                        child: const AnimatedSection(
+                          delay: Duration(milliseconds: 340),
+                          child: ContactSection(),
+                        ),
                       ),
-                    ),
-                    const FooterSection(),
-                  ],
+                      const FooterSection(),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AtmosphereBackground extends StatefulWidget {
+  const _AtmosphereBackground();
+
+  @override
+  State<_AtmosphereBackground> createState() => _AtmosphereBackgroundState();
+}
+
+class _AtmosphereBackgroundState extends State<_AtmosphereBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 14),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final t = _controller.value;
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                colors.primaryContainer.withValues(alpha: 0.24 + (0.04 * t)),
+                colors.surface,
+                colors.tertiaryContainer.withValues(
+                  alpha: 0.16 + (0.05 * (1 - t)),
+                ),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 60 + (36 * t),
+                left: -70,
+                child: _GlowOrb(
+                  size: 240,
+                  color: colors.primary.withValues(alpha: 0.18),
+                ),
+              ),
+              Positioned(
+                right: -90,
+                top: 280 - (40 * t),
+                child: _GlowOrb(
+                  size: 290,
+                  color: colors.tertiary.withValues(alpha: 0.16),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _GlowOrb extends StatelessWidget {
+  const _GlowOrb({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [color, color.withValues(alpha: 0)],
+            stops: const [0.18, 1],
+          ),
+        ),
       ),
     );
   }

@@ -29,6 +29,34 @@ class AboutSection extends StatelessWidget {
               Text(PortfolioData.flutterExperience),
               const SizedBox(height: 14),
               Text(PortfolioData.iotExperience),
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  Chip(
+                    label: Text(
+                      'Total Experience: ${PortfolioData.totalExperience}',
+                    ),
+                  ),
+                  Chip(
+                    label: Text(
+                      'Location: ${PortfolioData.location['City']}, '
+                      '${PortfolioData.location['Country']}',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Hobbies: ${PortfolioData.hobbies.join(', ')}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Languages: ${PortfolioData.languages.join(', ')}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
         ),

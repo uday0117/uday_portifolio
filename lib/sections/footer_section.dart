@@ -24,11 +24,6 @@ class FooterSection extends StatelessWidget {
             children: [
               Text('Copyright $year Uday Reddy. All rights reserved.'),
               IconButton(
-                onPressed: () => LaunchUtils.openUrl(AppConstants.githubUrl),
-                icon: const Icon(Icons.code),
-                tooltip: 'GitHub',
-              ),
-              IconButton(
                 onPressed: () => LaunchUtils.openUrl(AppConstants.linkedInUrl),
                 icon: const Icon(Icons.business),
                 tooltip: 'LinkedIn',

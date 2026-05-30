@@ -64,9 +64,10 @@ class _ContactSectionState extends State<ContactSection> {
                 onTap: () => LaunchUtils.sendMail(email: AppConstants.email),
               ),
               SocialIconButton(
-                icon: Icons.code,
-                label: 'GitHub',
-                onTap: () => LaunchUtils.openUrl(AppConstants.githubUrl),
+                icon: Icons.call_outlined,
+                label: 'Call',
+                onTap: () =>
+                    LaunchUtils.openUrl('tel:${AppConstants.phoneDial}'),
               ),
               SocialIconButton(
                 icon: Icons.business_center_outlined,
@@ -79,6 +80,100 @@ class _ContactSectionState extends State<ContactSection> {
                 onTap: () => LaunchUtils.openUrl(AppConstants.youtubeUrl),
               ),
             ],
+          ),
+          const SizedBox(height: 20),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer.withValues(alpha: 0.34),
+                      Theme.of(
+                        context,
+                      ).colorScheme.surface.withValues(alpha: 0.85),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.support_agent_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Support Actions',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Use quick actions to contact me or explore all published apps on Play Store.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 14),
+                      SelectableText('Contact: ${AppConstants.email}'),
+                      const SizedBox(height: 6),
+                      SelectableText('Phone: ${AppConstants.phone}'),
+                      const SizedBox(height: 6),
+                      SelectableText('LinkedIn: ${AppConstants.linkedInUrl}'),
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: () => LaunchUtils.sendMail(
+                              email: AppConstants.email,
+                              subject: 'Support request from portfolio',
+                            ),
+                            icon: const Icon(Icons.email_outlined),
+                            label: const Text('Email Support'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: () => LaunchUtils.openUrl(
+                              'tel:${AppConstants.phoneDial}',
+                            ),
+                            icon: const Icon(Icons.call_outlined),
+                            label: const Text('Call Now'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: () => LaunchUtils.openUrl(
+                              AppConstants.playStoreDeveloperUrl,
+                            ),
+                            icon: const Icon(Icons.shop_2_outlined),
+                            label: const Text('More Apps'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: () =>
+                                LaunchUtils.openUrl(AppConstants.linkedInUrl),
+                            icon: const Icon(Icons.business_center_outlined),
+                            label: const Text('LinkedIn Profile'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 24),
           Card(
