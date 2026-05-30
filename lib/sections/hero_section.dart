@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_constants.dart';
@@ -7,10 +9,41 @@ import '../data/portfolio_data.dart';
 import '../widgets/hero_badge.dart';
 import '../widgets/section_container.dart';
 
-class HeroSection extends StatelessWidget {
+class HeroSection extends StatefulWidget {
   const HeroSection({required this.onContactTap, super.key});
 
   final VoidCallback onContactTap;
+
+  @override
+  State<HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<HeroSection> {
+  static const _roles = [
+    'Flutter Developer',
+    'Android Specialist',
+    'Mobile App Architect',
+  ];
+
+  late Timer _timer;
+  int _roleIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (!mounted) return;
+      setState(() {
+        _roleIndex = (_roleIndex + 1) % _roles.length;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +90,29 @@ class HeroSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Flutter Developer',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w700,
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 420),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, 0.25),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
                           ),
+                        );
+                      },
+                      child: Text(
+                        _roles[_roleIndex],
+                        key: ValueKey<String>(_roles[_roleIndex]),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -82,9 +131,16 @@ class HeroSection extends StatelessWidget {
                           label: const Text('Download Resume'),
                         ),
                         OutlinedButton.icon(
-                          onPressed: onContactTap,
+                          onPressed: widget.onContactTap,
                           icon: const Icon(Icons.mail_outline_rounded),
                           label: const Text('Contact Me'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => LaunchUtils.openUrl(
+                            AppConstants.playStoreDeveloperUrl,
+                          ),
+                          icon: const Icon(Icons.shop_2_outlined),
+                          label: const Text('Play Store Apps'),
                         ),
                       ],
                     ),

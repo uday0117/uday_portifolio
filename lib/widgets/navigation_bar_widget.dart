@@ -27,7 +27,22 @@ class NavigationBarWidget extends StatelessWidget
 
     if (isMobile) {
       return AppBar(
-        title: const Text('Uday Reddy'),
+        title: RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.titleMedium,
+            children: [
+              const TextSpan(text: '< '),
+              TextSpan(
+                text: 'Uday',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const TextSpan(text: ' />'),
+            ],
+          ),
+        ),
         actions: [
           IconButton(
             tooltip: 'Toggle theme',
@@ -51,20 +66,41 @@ class NavigationBarWidget extends StatelessWidget
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.88),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.76),
         border: Border(
           bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant,
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.22),
           ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.08),
+            blurRadius: 22,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Text(
-            'Uday Reddy',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.titleLarge,
+              children: [
+                const TextSpan(text: '< '),
+                TextSpan(
+                  text: 'Uday',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const TextSpan(text: ' />'),
+              ],
+            ),
           ),
           const Spacer(),
           Wrap(
